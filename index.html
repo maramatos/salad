@@ -8,16 +8,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root{
-  --paper: #F6F1E4;
-  --paper-dim: #EDE6D3;
-  --forest: #26402F;
-  --forest-soft: #3C5A45;
-  --tomato: #C1442D;
-  --mustard: #B8862B;
-  --ink: #2B2A24;
-  --ink-soft: #6B6558;
-  --line: #D8CFB8;
-  --card: #FFFDF7;
+  --paper: #F1EDCC;
+  --paper-dim: #E3DEB2;
+  --forest: #2C6577;
+  --forest-soft: #3F7F92;
+  --accent: #7FA467;
+  --accent-light: #B7D48B;
+  --sky: #9FE2F2;
+  --ink: #263029;
+  --ink-soft: #62695F;
+  --card: #FCFBF0;
 }
 
 *{ box-sizing: border-box; }
@@ -51,8 +51,8 @@ header{
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--tomato);
-  font-weight: 600;
+  color: var(--accent);
+  font-weight: 700;
 }
 h1{
   font-family: 'Fraunces', serif;
@@ -84,7 +84,7 @@ h1{
 /* ---------- Section cards ---------- */
 .section{
   background: var(--card);
-  border: 1px solid var(--line);
+  border: 1px solid var(--paper-dim);
   border-radius: 4px;
   margin-bottom: 14px;
   overflow: hidden;
@@ -103,7 +103,7 @@ h1{
   user-select: none;
   gap: 12px;
 }
-.section-head:hover .sec-title{ color: var(--tomato); }
+.section-head:hover .sec-title{ color: var(--accent); }
 
 .sec-title-wrap{
   display:flex;
@@ -216,7 +216,7 @@ h1{
 .limit-msg{
   padding: 0 20px 14px;
   font-size: 12.5px;
-  color: var(--tomato);
+  color: var(--forest-soft);
   font-family: 'IBM Plex Mono', monospace;
   display:none;
 }
@@ -234,7 +234,7 @@ h1{
 }
 .ticket-head{
   text-align:center;
-  border-bottom: 1px dashed var(--line);
+  border-bottom: 1px dashed var(--paper-dim);
   padding-bottom: 12px;
   margin-bottom: 12px;
 }
@@ -251,13 +251,20 @@ h1{
   color: var(--ink-soft);
   margin-top: 3px;
 }
+.ticket-base{
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--paper-dim);
+}
+.ticket-base .ticket-group-title{ color: var(--forest-soft); }
+.ticket-base .ticket-item::before{ content: '✓ '; color: var(--forest); }
 .ticket-group{ margin-bottom: 12px; }
 .ticket-group-title{
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--mustard);
-  font-weight: 600;
+  color: var(--accent);
+  font-weight: 700;
   margin-bottom: 4px;
 }
 .ticket-item{
@@ -269,7 +276,7 @@ h1{
 }
 .ticket-item::before{
   content:'· ';
-  color: var(--tomato);
+  color: var(--forest-soft);
 }
 .ticket-empty{
   font-size: 12.5px;
@@ -281,7 +288,7 @@ h1{
 .ticket-progress{
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px dashed var(--line);
+  border-top: 1px dashed var(--paper-dim);
   font-size: 11.5px;
   color: var(--ink-soft);
   text-align:center;
@@ -326,7 +333,11 @@ h1{
         <div class="name">Tu pedido</div>
         <div class="tag">Addictive Salad</div>
       </div>
-      <div id="ticketBody"><div class="ticket-empty">Aún no has elegido nada</div></div>
+      <div class="ticket-base">
+        <div class="ticket-group-title">Base</div>
+        <div class="ticket-item"><span>Lechuga</span></div>
+      </div>
+      <div id="ticketBody"><div class="ticket-empty">Aún no has elegido nada más</div></div>
       <div class="ticket-progress" id="ticketProgress"></div>
       <button class="reset-btn" id="resetBtn">Empezar de nuevo</button>
     </aside>
@@ -336,11 +347,10 @@ h1{
 
 <script>
 const DATA = [
-  { key: 'vegetales', title: 'Vegetales', max: 4, items: ['Tomate','Cebolla morada','Cebolla blanca','Apio','Pepino','Pimentón','Zanahoria','Repollo blanco','Repollo morado','Rábano','Palta','Vainitas','Arvejas','Brócoli','Palmito','Rúcula','Espinaca'] },
+  { key: 'vegetales', title: 'Vegetales', max: 5, items: ['Tomate','Cebolla morada','Cebolla blanca','Apio','Pepino','Pimentón','Zanahoria','Repollo blanco','Repollo morado','Rábano','Palta','Arvejas','Palmito','Rúcula','Espinaca','Manzana verde','Frutilla','Mango'] },
   { key: 'carbos', title: 'Carbos', max: 1, items: ['Quinua','Trigo','Fideo','Camote','Garbanzo','Poroto negro','Poroto blanco','Choclitos'] },
-  { key: 'protea', title: 'Prote A', max: 1, items: ['Pollo grill','Milanesa de carne','Lomo ahumado','Nuggets de pollo','Chicken tenders','Jamón','Pechuga de pavo','Kanikama'] },
-  { key: 'proteb', title: 'Prote B', max: 1, items: ['Queso mozzarella','Huevo','Milanesa de avena','Milanesa de soya','Tocino','Tofu'] },
-  { key: 'topping', title: 'Topping', max: 2, items: ['Champiñones','Pepinillos','Aceituna','Jalapeños','Crutones','Nachos','Uvas pasas','Nueces','Maní','Almendras','Avena','Sésamo','Chia','Semillas de girasol','Cilantro','Perejil'] },
+  { key: 'proteina', title: 'Proteína', max: 3, items: ['Pollo grill','Milanesa de carne','Lomo ahumado','Nuggets de pollo','Chicken tenders','Jamón','Pechuga de pavo','Atún','Queso mozzarella','Huevo','Milanesa de avena','Milanesa de soya','Tocino'] },
+  { key: 'topping', title: 'Topping', max: 2, items: ['Champiñones','Pepinillos','Aceituna verde','Aceituna negra','Jalapeños','Crutones','Nachos','Uvas pasas','Nueces','Maní','Almendras','Avena','Sésamo','Chia','Semillas de girasol','Cilantro','Perejil','Quirquiña'] },
   { key: 'salsas', title: 'Salsas', max: 2, items: ['Apio/ajo','Cesar','Queso azul','Golf','Alfredo','Honey mustard (Miel mostaza)','Teriyaki','Ranch (Yogurt griego)','Pesto','Palta','Maní picante','Vinagreta de mostaza','Vinagreta balsámica','Llajua'] }
 ];
 
@@ -393,7 +403,7 @@ function render(){
       <div class="limit-msg">Ya elegiste el máximo de ${sec.title.toLowerCase()} (${sec.max}). Desmarca uno para cambiar.</div>
     `;
 
-    // header click toggles collapse manually (only meaningful once section has selections or is full)
+    // header click toggles collapse manually
     secEl.querySelector('.section-head').addEventListener('click', () => {
       secEl.classList.toggle('collapsed');
     });
@@ -437,7 +447,7 @@ function renderTicket(){
   const groupsWithItems = DATA.filter(sec => state[sec.key].size > 0);
 
   if (groupsWithItems.length === 0){
-    body.innerHTML = '<div class="ticket-empty">Aún no has elegido nada</div>';
+    body.innerHTML = '<div class="ticket-empty">Aún no has elegido nada más</div>';
   } else {
     body.innerHTML = groupsWithItems.map(sec => `
       <div class="ticket-group">
