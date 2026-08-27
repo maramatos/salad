@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Addictive Salad — Arma tu ensalada</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -314,6 +315,34 @@ h1{
   background: var(--forest-soft);
   color: var(--paper);
 }
+
+.download-row{
+  display:flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.download-btn{
+  flex: 1;
+  background: var(--forest);
+  border: 1px solid var(--forest);
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 9px 0;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.download-btn:hover{
+  background: var(--forest-soft);
+  border-color: var(--forest-soft);
+}
+.download-btn:disabled{
+  opacity: 0.5;
+  cursor: wait;
+}
 </style>
 </head>
 <body>
@@ -339,6 +368,9 @@ h1{
       </div>
       <div id="ticketBody"><div class="ticket-empty">Aún no has elegido nada más</div></div>
       <div class="ticket-progress" id="ticketProgress"></div>
+      <div class="download-row">
+        <button class="download-btn" id="downloadJpg">Descargar imagen (JPG)</button>
+      </div>
       <button class="reset-btn" id="resetBtn">Empezar de nuevo</button>
     </aside>
   </div>
@@ -347,11 +379,11 @@ h1{
 
 <script>
 const DATA = [
-  { key: 'vegetales', title: 'Vegetales', max: 5, items: ['Tomate','Cebolla morada','Cebolla blanca','Apio','Pepino','Pimentón','Zanahoria','Repollo blanco','Repollo morado','Rábano','Palta','Arvejas','Palmito','Rúcula','Espinaca','Manzana verde','Frutilla','Mango'] },
-  { key: 'carbos', title: 'Carbos', max: 1, items: ['Quinua','Trigo','Fideo','Camote','Garbanzo','Poroto negro','Poroto blanco','Choclitos'] },
-  { key: 'proteina', title: 'Proteína', max: 3, items: ['Pollo grill','Milanesa de carne','Lomo ahumado','Nuggets de pollo','Chicken tenders','Jamón','Pechuga de pavo','Atún','Queso mozzarella','Huevo','Milanesa de avena','Milanesa de soya','Tocino'] },
-  { key: 'topping', title: 'Topping', max: 2, items: ['Champiñones','Pepinillos','Aceituna verde','Aceituna negra','Jalapeños','Crutones','Nachos','Uvas pasas','Nueces','Maní','Almendras','Avena','Sésamo','Chia','Semillas de girasol','Cilantro','Perejil','Quirquiña'] },
-  { key: 'salsas', title: 'Salsas', max: 2, items: ['Apio/ajo','Cesar','Queso azul','Golf','Alfredo','Honey mustard (Miel mostaza)','Teriyaki','Ranch (Yogurt griego)','Pesto','Palta','Maní picante','Vinagreta de mostaza','Vinagreta balsámica','Llajua'] }
+  { key: 'vegetales', title: 'Vegetales', max: 5, items: ['Apio','Arvejas','Cebolla blanca','Cebolla morada','Espinaca','Frutilla','Mango','Manzana verde','Palmito','Palta','Pepino','Pimentón','Rábano','Repollo blanco','Repollo morado','Rúcula','Tomate','Zanahoria'] },
+  { key: 'carbos', title: 'Carbos', max: 1, items: ['Camote','Choclitos','Fideo','Garbanzo','Poroto negro','Poroto rojo','Quinua','Trigo'] },
+  { key: 'proteina', title: 'Proteína', max: 3, items: ['Atún','Chicken tenders','Huevo','Jamón','Lomo ahumado','Milanesa de avena','Milanesa de carne','Milanesa de soya','Nuggets de pollo','Pechuga de pavo','Pollo grill','Queso mozzarella','Tocino'] },
+  { key: 'topping', title: 'Topping', max: 3, items: ['Aceituna negra','Aceituna verde','Almendras','Avena','Champiñones','Chía','Cilantro','Crutones','Jalapeños','Maní','Nachos','Nueces','Pepinillos','Perejil','Quirquiña','Semillas de girasol','Sésamo','Uvas pasas'] },
+  { key: 'salsas', title: 'Salsas', max: 2, items: ['Alfredo','Apio/ajo','Cesar','Golf','Honey mustard (Miel mostaza)','Llajua','Maní picante','Palta','Pesto','Queso azul','Ranch (Yogurt griego)','Teriyaki','Vinagreta balsámica','Vinagreta de mostaza'] }
 ];
 
 const state = {};
@@ -470,6 +502,43 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   render();
   renderTicket();
 });
+
+async function downloadTicket(){
+  const ticketEl = document.querySelector('.ticket');
+  const downloadRow = document.querySelector('.download-row');
+  const resetBtn = document.getElementById('resetBtn');
+  const btns = downloadRow.querySelectorAll('button');
+
+  btns.forEach(b => b.disabled = true);
+  downloadRow.style.visibility = 'hidden';
+  resetBtn.style.visibility = 'hidden';
+
+  try{
+    const canvas = await html2canvas(ticketEl, {
+      backgroundColor: '#FCFBF0',
+      scale: 2,
+      useCORS: true
+    });
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'pedido-addictive-salad.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch(err){
+    alert('No se pudo generar la imagen. Intenta de nuevo.');
+    console.error(err);
+  } finally {
+    btns.forEach(b => b.disabled = false);
+    downloadRow.style.visibility = 'visible';
+    resetBtn.style.visibility = 'visible';
+  }
+}
+
+document.getElementById('downloadJpg').addEventListener('click', downloadTicket);
 
 render();
 renderTicket();
